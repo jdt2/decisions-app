@@ -15,6 +15,13 @@ export default function SignIn({ navigation }) {
     navigation.navigate("CreateAccount");
   }
 
+  const goHome = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home' }],
+    });
+  }
+
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }} alwaysBounceVertical={false} keyboardShouldPersistTaps="never">
       <View style={styles.container}>
@@ -33,7 +40,7 @@ export default function SignIn({ navigation }) {
             style={styles.input}
             selectionColor="white"
             keyboardType="email-address"
-            theme={{ colors: { text: "white" } }}
+            theme={{ colors: { text: "white", placeholder: 'rgba(255, 255, 255, 0.5);' } }}
           />
           <TextInput
             mode="outlined"
@@ -41,7 +48,7 @@ export default function SignIn({ navigation }) {
             style={styles.input}
             selectionColor="white"
             secureTextEntry={secure}
-            theme={{ colors: { text: "white" } }}
+            theme={{ colors: { text: "white", placeholder: 'rgba(255, 255, 255, 0.5);' } }}
             right={
               <TextInput.Icon style={{ marginRight: 30 }} name={secure ? "eye" : "eye-off"} color="white"
                 onPress={() => setSecure(!secure)}
@@ -53,7 +60,7 @@ export default function SignIn({ navigation }) {
           </LinkButton>
         </View>
         <View style={styles.buttonContain}>
-          <ContainedButton onPress={() => {}}>
+          <ContainedButton onPress={() => goHome()}>
             Continue
           </ContainedButton>
         </View>

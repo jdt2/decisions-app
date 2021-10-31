@@ -8,7 +8,6 @@ export const DecisionsTheme = {
         primary: '#263238',
         accent: '#263238',
         text: '#263238',
-        placeholder: 'rgba(255, 255, 255, 0.5);'
     },
     roundness: 12,
     fonts: {

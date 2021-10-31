@@ -20,6 +20,11 @@ import {
 } from '@expo-google-fonts/inter';
 import SignIn from './src/screens/signin/SignIn';
 import CreateAccount from './src/screens/signin/CreateAccount';
+import Home from './src/screens/Home';
+import JoinRoom from './src/screens/JoinRoom';
+import Room from './src/screens/Room';
+import Instructions from './src/screens/Instructions';
+import RoomSwipe from './src/screens/RoomSwipe';
 
 const Stack = createStackNavigator();
 
@@ -53,6 +58,11 @@ export default function App() {
           }}>
             <Stack.Screen name="SignIn" component={SignIn} />
             <Stack.Screen name="CreateAccount" component={CreateAccount} />
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="JoinRoom" component={JoinRoom} />
+            <Stack.Screen name="Room" component={Room} />
+            <Stack.Screen name="Instructions" component={Instructions} options={{ headerShown: false }} />
+            <Stack.Screen name="RoomSwipe" component={RoomSwipe} />
           </Stack.Navigator>
         </NavigationContainer>
         <StatusBar style="dark" />
