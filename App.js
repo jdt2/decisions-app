@@ -26,6 +26,8 @@ import Room from './src/screens/Room';
 import Instructions from './src/screens/Instructions';
 import RoomSwipe from './src/screens/RoomSwipe';
 import HostStreaming from './src/screens/HostStreaming';
+import HostGenres from './src/screens/HostGenres';
+import HostFilters from './src/screens/HostFilters';
 
 const Stack = createStackNavigator();
 
@@ -69,6 +71,8 @@ export default function App() {
             <Stack.Screen name="Instructions" component={Instructions} options={{ headerShown: false }} />
             <Stack.Screen name="RoomSwipe" component={RoomSwipe} />
             <Stack.Screen name="HostStreaming" component={HostStreaming} options={hostOptions} />
+            <Stack.Screen name="HostGenres" component={HostGenres} options={hostOptions} />
+            <Stack.Screen name="HostFilters" component={HostFilters} options={hostOptions} />
             
           </Stack.Navigator>
         </NavigationContainer>

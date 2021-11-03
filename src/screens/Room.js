@@ -8,6 +8,10 @@ export default function Room({ navigation }) {
 
     const goToInstructions = () => {
         navigation.navigate("Instructions");
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Instructions' }],
+        });
     }
 
     return (
@@ -47,7 +51,7 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     buttonContain: {
-        paddingBottom: 48,
+        marginVertical: 48,
     },
     listItem: {
 

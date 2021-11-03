@@ -4,10 +4,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Button, TextInput, Text, Subheading, Headline, IconButton, List } from 'react-native-paper';
 import ContainedButton from '../components/ContainedButton';
 
-export default function HostStreaming({ navigation }) {
+export default function HostGenres({ navigation }) {
 
-    const genresScreen = () => {
-        navigation.navigate("HostGenres");
+    const filtersScreen = () => {
+        navigation.navigate("HostFilters");
     }
 
     return (
@@ -21,7 +21,11 @@ export default function HostStreaming({ navigation }) {
                 <Image source={require('../../assets/streaming/hbo.png')} style={styles.service} />
                 <Image source={require('../../assets/streaming/apple.png')} style={styles.service} />
                 <Image source={require('../../assets/streaming/peacock.png')} style={styles.service} />
-                <ContainedButton style={styles.nextButton} onPress={genresScreen}>Next</ContainedButton>
+                <Image source={require('../../assets/streaming/peacock.png')} style={styles.service} />
+                <Image source={require('../../assets/streaming/peacock.png')} style={styles.service} />
+                <Image source={require('../../assets/streaming/peacock.png')} style={styles.service} />
+                <Image source={require('../../assets/streaming/peacock.png')} style={styles.service} />
+                <ContainedButton style={styles.nextButton} onPress={filtersScreen}>Next</ContainedButton>
             </View>
         </ScrollView>
     );
