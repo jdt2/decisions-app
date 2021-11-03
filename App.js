@@ -73,7 +73,6 @@ export default function App() {
             <Stack.Screen name="HostStreaming" component={HostStreaming} options={hostOptions} />
             <Stack.Screen name="HostGenres" component={HostGenres} options={hostOptions} />
             <Stack.Screen name="HostFilters" component={HostFilters} options={hostOptions} />
-            
           </Stack.Navigator>
         </NavigationContainer>
         <StatusBar style="dark" />
