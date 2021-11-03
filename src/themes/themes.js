@@ -17,8 +17,8 @@ export const DecisionsTheme = {
             fontFamily: 'Inter_400Regular',
         },
         medium: {
-            fontWeight: "500",
-            fontFamily: 'Inter_500Medium',
+            fontWeight: "600",
+            fontFamily: 'Inter_600SemiBold',
         },
         light: {
             fontWeight: "300",

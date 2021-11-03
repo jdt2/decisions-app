@@ -8,10 +8,10 @@ export default function ContainedButton(props) {
             mode="contained"
             uppercase={false}
             contentStyle={{
-                height: 72,
+                height: props.height || 72,
             }}
             labelStyle={{
-                fontSize: 34,
+                fontSize: props.fontSize || 34,
             }}>
             {props.children}
         </Button>

@@ -4,15 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Button, TextInput, Text, Subheading, Headline, IconButton, List } from 'react-native-paper';
 import ContainedButton from '../components/ContainedButton';
 
-export default function Instructions({ navigation }) {
-
-    setTimeout(() => {
-        navigation.navigate("RoomSwipe");
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'RoomSwipe' }],
-        });
-    }, 3000)
+export default function HostStreaming({ navigation }) {
 
     return (
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }} alwaysBounceVertical={false} keyboardShouldPersistTaps="never">

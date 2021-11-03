@@ -9,10 +9,14 @@ export default function Home({ navigation }) {
         navigation.navigate("JoinRoom");
     }
 
+    const startRoom = () => {
+        navigation.navigate("HostStreaming");
+    }
+
     return (
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }} alwaysBounceVertical={false} keyboardShouldPersistTaps="never">
             <View style={styles.container}>
-                <Button compact style={{ width: 250, }} contentStyle={styles.startButton} onPress={() => { }}>
+                <Button compact style={{ width: 250, }} contentStyle={styles.startButton} onPress={startRoom}>
                     <Image
                         source={require('../../assets/startRoom.png')}
                         style={{ width: 241, height: 156, }}

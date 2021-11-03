@@ -25,8 +25,13 @@ import JoinRoom from './src/screens/JoinRoom';
 import Room from './src/screens/Room';
 import Instructions from './src/screens/Instructions';
 import RoomSwipe from './src/screens/RoomSwipe';
+import HostStreaming from './src/screens/HostStreaming';
 
 const Stack = createStackNavigator();
+
+const hostOptions = {
+  header: (props) => <NavigationBar {...props} roomCode={"AB98"} />
+};
 
 export default function App() {
 
@@ -63,6 +68,8 @@ export default function App() {
             <Stack.Screen name="Room" component={Room} />
             <Stack.Screen name="Instructions" component={Instructions} options={{ headerShown: false }} />
             <Stack.Screen name="RoomSwipe" component={RoomSwipe} />
+            <Stack.Screen name="HostStreaming" component={HostStreaming} options={hostOptions} />
+            
           </Stack.Navigator>
         </NavigationContainer>
         <StatusBar style="dark" />

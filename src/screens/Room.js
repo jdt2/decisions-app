@@ -11,7 +11,7 @@ export default function Room({ navigation }) {
     }
 
     return (
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }} alwaysBounceVertical={false} keyboardShouldPersistTaps="never">
+        <ScrollView style={{ flex: 1, backgroundColor: '#fff' }} contentContainerStyle={{ flexGrow: 1 }} alwaysBounceVertical={false} keyboardShouldPersistTaps="never">
             <View style={styles.container}>
                 <View />
                 <List.Section style={styles.list}>

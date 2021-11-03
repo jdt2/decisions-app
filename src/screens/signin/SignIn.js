@@ -16,6 +16,7 @@ export default function SignIn({ navigation }) {
   }
 
   const goHome = () => {
+    navigation.navigate("Home");
     navigation.reset({
       index: 0,
       routes: [{ name: 'Home' }],
