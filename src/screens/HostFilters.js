@@ -8,7 +8,7 @@ import Header from '../components/Header';
 export default function HostFilters({ navigation }) {
 
     const startRoom = () => {
-        navigation.navigate("Room");
+        navigation.navigate("Room", {host: true});
     }
 
     return (

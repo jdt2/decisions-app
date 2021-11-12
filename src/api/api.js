@@ -12,3 +12,12 @@ export async function discoverMovies() {
         console.error(e);
     }
 }
+
+export async function getGenres(genres) {
+    try {
+        const data = (await axios.get(API_URI + `/genre/movie/list?api_key=${API_KEY}`)).data.genres;
+        return data.filter((e) => (genres.indexOf(e.id) > -1)).map((e, i) => e.name);
+    } catch (e) {
+        console.error(e);
+    }
+}

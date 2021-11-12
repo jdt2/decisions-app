@@ -5,6 +5,8 @@ import { Button, TextInput, Text, Subheading, Headline, IconButton, List } from 
 import ContainedButton from '../components/ContainedButton';
 import { discoverMovies } from '../api/api';
 
+// TODO: Merge with RoomSwipe for preloading
+
 export default function Instructions({ navigation }) {
 
     const windowWidth = Dimensions.get('window').width

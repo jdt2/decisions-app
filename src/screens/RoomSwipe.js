@@ -7,50 +7,59 @@ import Header from '../components/Header';
 import Subheader from '../components/Subheader';
 import ImageBlurLoading from 'react-native-image-blur-loading';
 import FastImage from 'react-native-fast-image';
+import { getMovies } from '../api/firebase';
 
-export default function RoomSwipe({ navigation }) {
+const exampleMovies = [
+    {
+        name: "Baby Driver",
+        year: 2017,
+        description: "After being coerced into working for a crime boss, a young getaway driver finds himself taking part in a heist doomed to fail.",
+        genres: ["Action", "Crime", "Drama"],
+        director: ['Edgar Wright'],
+        writers: ['Edgar Wright'],
+        stars: ['Ansel Elgort', 'Jon Bernthal'],
+        thumbnail: require('../../assets/exampleMovies/babyDriverThumbnail.png'),
+        pic: require('../../assets/exampleMovies/babyDriver.png')
+    },
+    {
+        name: "Shawshank Redemption",
+        year: 1994,
+        description: "",
+        genres: ["Action", "Crime", "Drama"],
+        director: ['Edgar Wright'],
+        writers: ['Edgar Wright'],
+        stars: ['Ansel Elgort', 'Jon Bernthal'],
+        thumbnail: require('../../assets/exampleMovies/shawshankThumbnail.png'),
+        pic: require('../../assets/exampleMovies/shawshank.png')
+    },
+    {
+        name: "The Godfather",
+        year: 1972,
+        description: "",
+        genres: ["Action", "Crime", "Drama"],
+        director: ['Edgar Wright'],
+        writers: ['Edgar Wright'],
+        stars: ['Ansel Elgort', 'Jon Bernthal'],
+        thumbnail: require('../../assets/exampleMovies/godfatherThumbnail.png'),
+        pic: require('../../assets/exampleMovies/godfather.png')
+    }
+];
 
-    const movies = [
-        {
-            name: "Baby Driver",
-            year: 2017,
-            description: "After being coerced into working for a crime boss, a young getaway driver finds himself taking part in a heist doomed to fail.",
-            genres: ["Action", "Crime", "Drama"],
-            director: ['Edgar Wright'],
-            writers: ['Edgar Wright'],
-            stars: ['Ansel Elgort', 'Jon Bernthal'],
-            thumbnail: require('../../assets/exampleMovies/babyDriverThumbnail.png'),
-            pic: require('../../assets/exampleMovies/babyDriver.png')
-        },
-        {
-            name: "Shawshank Redemption",
-            year: 1994,
-            description: "",
-            genres: ["Action", "Crime", "Drama"],
-            director: ['Edgar Wright'],
-            writers: ['Edgar Wright'],
-            stars: ['Ansel Elgort', 'Jon Bernthal'],
-            thumbnail: require('../../assets/exampleMovies/shawshankThumbnail.png'),
-            pic: require('../../assets/exampleMovies/shawshank.png')
-        },
-        {
-            name: "The Godfather",
-            year: 1972,
-            description: "",
-            genres: ["Action", "Crime", "Drama"],
-            director: ['Edgar Wright'],
-            writers: ['Edgar Wright'],
-            stars: ['Ansel Elgort', 'Jon Bernthal'],
-            thumbnail: require('../../assets/exampleMovies/godfatherThumbnail.png'),
-            pic: require('../../assets/exampleMovies/godfather.png')
-        }
-    ];
+export default function RoomSwipe({ navigation, route }) {
 
-    const [movie, setMovie] = React.useState(movies[0]);
-    const [nextMovie, setNextMovie] = React.useState(movies[1]);
+    const [movie, setMovie] = React.useState(exampleMovies[0]);
+    const [nextMovie, setNextMovie] = React.useState(exampleMovies[1]);
+    const [movies, setMovies] = React.useState([]);
     const [index, setIndex] = React.useState(0);
     const translateX = new Animated.Value(0)
     const translateY = new Animated.Value(0)
+
+    React.useEffect(() => {
+        const retrieveMovies = async () => {
+            setMovies(await getMovies());
+        }
+        retrieveMovies();
+    }, [])
 
     const handlePan = Animated.event(
         [{ nativeEvent: { translationX: translateX, translationY: translateY } }], { useNativeDriver: true }
@@ -112,21 +121,21 @@ export default function RoomSwipe({ navigation }) {
                     source={movie.pic}
                     style={styles.poster}
                 /> */}
-                <Image source={movie.pic} style={styles.poster} />
+                <Image source={{uri: movie.image_path}} style={styles.poster} />
                 <Card.Content style={styles.cardContent}>
-                    <Header fontSize={24} lineHeight={29}>{movie.name} ({movie.year})</Header>
-                    <Text style={styles.description}>{movie.description}</Text>
+                    <Header fontSize={24} lineHeight={29}>{movie.title} ({movie.date.toDate().getFullYear()})</Header>
+                    <Text style={styles.description}>{movie.summary}</Text>
                     <Header fontSize={24} lineHeight={29}>Genres</Header>
                     <View style={styles.genres}>
                         {movie.genres.map((genre, i) => (
                             <Chip key={i} style={styles.genre} textStyle={{ color: 'white' }}>{genre}</Chip>
                         ))}
                     </View>
-                    <View style={styles.details}>
+                    {/* <View style={styles.details}>
                         <Header style={{ marginBottom: 16, }} fontSize={20} lineHeight={24}>Director{movie.director.length > 1 && '(s)'}   <Text>{movie.director.map((e, i) => (i !== movie.director.length - 1 ? e + ", " : e))}</Text></Header>
                         <Header style={{ marginBottom: 16, }} fontSize={20} lineHeight={24}>Writer{movie.writers.length > 1 && '(s)'}   <Text>{movie.writers.map((e, i) => (i !== movie.writers.length - 1 ? e + ", " : e))}</Text></Header>
                         <Header style={{ marginBottom: 16, }} fontSize={20} lineHeight={24}>Stars   <Text>{movie.stars.map((e, i) => (i !== movie.stars.length - 1 ? e + ", " : e))}</Text></Header>
-                    </View>
+                    </View> */}
                 </Card.Content>
             </Card>
         );
@@ -200,6 +209,7 @@ const styles = StyleSheet.create({
     genres: {
         flex: 1,
         flexDirection: 'row',
+        flexWrap: 'wrap',
     },
     genre: {
         marginRight: 20,

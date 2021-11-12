@@ -3,8 +3,20 @@ import { StyleSheet, View, ScrollView, Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Button, TextInput, Text, Subheading, Headline, IconButton, List } from 'react-native-paper';
 import ContainedButton from '../components/ContainedButton';
+import { createRoom } from '../api/firebase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HostStreaming({ navigation }) {
+
+    React.useEffect(() => {
+        const newRoom = async () => {
+            const roomCode = await AsyncStorage.getItem("roomCode");
+            if (roomCode === null) {
+                createRoom();
+            }
+        }
+        newRoom();
+    }, []);
 
     const genresScreen = () => {
         navigation.navigate("HostGenres");

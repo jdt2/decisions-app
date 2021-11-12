@@ -1,13 +1,29 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Appbar } from 'react-native-paper';
 import ContainedButton from './ContainedButton';
 
-export default function NavigationBar({ navigation, back, route, roomCode }) {
+export default function NavigationBar({ navigation, back, showRoomCode }) {
+    const [roomCode, setRoomCode] = React.useState(null);
+
+    React.useEffect(() => {
+        const getRoomCode = async () => {
+            let roomCode = await AsyncStorage.getItem("roomCode");
+            while (roomCode === null) {
+                roomCode = await AsyncStorage.getItem("roomCode");
+            }
+            setRoomCode(roomCode);
+        }
+        if (showRoomCode) {
+            getRoomCode();
+        }
+    }, [])
+    
     return (
         <Appbar.Header statusBarHeight={44} style={styles.header}>
             {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
-            {roomCode ? <ContainedButton height={64} fontSize={24} style={styles.roomCode}>Room #     {roomCode}</ContainedButton> : <Appbar.Content titleStyle={styles.content} title={"Decisions"} />}
+            {showRoomCode ? <ContainedButton height={64} fontSize={24} style={styles.roomCode}>Room #     {roomCode}</ContainedButton> : <Appbar.Content titleStyle={styles.content} title={"Decisions"} />}
         </Appbar.Header>
     );
 };

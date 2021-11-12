@@ -8,6 +8,7 @@ export const DecisionsTheme = {
         primary: '#263238',
         accent: '#263238',
         text: '#263238',
+        error: '#CE4141',
     },
     roundness: 12,
     fonts: {

@@ -8,9 +8,9 @@ export default function LinkButton(props) {
             mode="text"
             uppercase={false}
             labelStyle={{
-                textDecorationLine: 'underline',
+                textDecorationLine: props.normal ? 'none' : 'underline',
                 fontWeight: '300',
-                fontFamily: 'Inter_300Light'
+                fontFamily: 'Inter_300Light',
             }}>
             {props.children}
         </Button>

@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Button, TextInput, Text, Subheading, Headline, IconButton, List } from 'react-native-paper';
 import ContainedButton from '../components/ContainedButton';
 
-export default function HostGenres({ navigation }) {
+export default function HostGenres({ navigation, route }) {
 
     const filtersScreen = () => {
         navigation.navigate("HostFilters");

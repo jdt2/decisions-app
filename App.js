@@ -28,11 +28,12 @@ import RoomSwipe from './src/screens/RoomSwipe';
 import HostStreaming from './src/screens/HostStreaming';
 import HostGenres from './src/screens/HostGenres';
 import HostFilters from './src/screens/HostFilters';
+import { auth, isLoggedIn } from './src/api/firebase';
 
 const Stack = createStackNavigator();
 
 const hostOptions = {
-  header: (props) => <NavigationBar {...props} roomCode={"AB98"} />
+  header: (props) => <NavigationBar {...props} showRoomCode />
 };
 
 export default function App() {
@@ -49,7 +50,15 @@ export default function App() {
     Inter_900Black,
   });
 
-  if (!fontsLoaded) {
+  const [isAuthReady, setAuthReady] = React.useState(false);
+
+  React.useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      setAuthReady(true);
+    })
+  }, [])
+  
+  if (!fontsLoaded || !isAuthReady) {
     return (
       <View style={styles.container}>
         <ActivityIndicator />
@@ -59,7 +68,7 @@ export default function App() {
     return (
       <Provider theme={DecisionsTheme}>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="SignIn" screenOptions={{
+          <Stack.Navigator initialRouteName={isLoggedIn() ? "Home" : "SignIn"} screenOptions={{
             header: (props) => <NavigationBar {...props} />,
             headerShadowVisible: false,
           }}>

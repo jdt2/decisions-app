@@ -3,8 +3,23 @@ import { StyleSheet, View, ScrollView, Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Button, TextInput, Text, Subheading, Headline, IconButton, List } from 'react-native-paper';
 import ContainedButton from '../components/ContainedButton';
+import { addMoviesToRoom } from '../api/firebase';
 
-export default function Room({ navigation }) {
+export default function Room({ navigation, route }) {
+    const [canReady, setCanReady] = React.useState(true);
+
+    const isHost = route.params.host;
+    
+    React.useEffect(() => {
+        const updateRoom = async () => {
+            setCanReady(false);
+            await addMoviesToRoom();
+            setCanReady(true);
+        }
+        if (isHost) {
+            updateRoom();
+        }
+    }, []);
 
     const goToInstructions = () => {
         navigation.navigate("Instructions");
@@ -27,7 +42,7 @@ export default function Room({ navigation }) {
                     </ScrollView>
                 </List.Section>
                 <View style={styles.buttonContain}>
-                    <ContainedButton onPress={() => goToInstructions()}>
+                    <ContainedButton onPress={() => goToInstructions()} disabled={!canReady}>
                         Ready
                     </ContainedButton>
                 </View>
