@@ -1,9 +1,9 @@
 import { initializeApp } from 'firebase/app';
 
 // Optionally import the services that you want to use
-//import {...} from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 //import {...} from "firebase/database";
-//import {...} from "firebase/firestore";
+import { getFirestore, setDoc, doc } from "firebase/firestore";
 //import {...} from "firebase/functions";
 //import {...} from "firebase/storage";
 
@@ -19,3 +19,36 @@ const firebaseConfig = {
 };
 
 initializeApp(firebaseConfig);
+
+const auth = getAuth();
+const firestore = getFirestore();
+
+export const signInWithEmail = async (email, password) => {
+    try {
+        const credential = await signInWithEmailAndPassword(auth, email, password);
+        const user = credential.user;
+        await setDoc(doc(firestore, "players", user.uid), {
+            name: user.displayName,
+            moviesWatched: [],
+        })
+        return null;
+    } catch (e) {
+        console.error(e);
+        return e;
+    }
+}
+
+export const signUpWithEmail = async (email, password) => {
+    try {
+        const credential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = credential.user;
+        await setDoc(doc(firestore, "players", user.uid), {
+            name: user.displayName,
+            moviesWatched: [],
+        })
+        return null;
+    } catch (e) {
+        console.error(e);
+        return e;
+    }
+}

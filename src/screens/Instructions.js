@@ -3,6 +3,7 @@ import { StyleSheet, View, ScrollView, Image, Animated, Dimensions } from 'react
 import { createStackNavigator } from '@react-navigation/stack';
 import { Button, TextInput, Text, Subheading, Headline, IconButton, List } from 'react-native-paper';
 import ContainedButton from '../components/ContainedButton';
+import { discoverMovies } from '../api/api';
 
 export default function Instructions({ navigation }) {
 
@@ -34,6 +35,8 @@ export default function Instructions({ navigation }) {
                 useNativeDriver: true,
             }),
         ]).start()
+
+        console.log(discoverMovies().then((response) => console.log(response)));
 
         setTimeout(() => {
             navigation.navigate("RoomSwipe");

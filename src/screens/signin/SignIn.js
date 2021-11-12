@@ -7,20 +7,31 @@ import Header from '../../components/Header';
 import Subheader from '../../components/Subheader';
 import LinkButton from '../../components/LinkButton';
 import ContainedButton from '../../components/ContainedButton';
+import { signInWithEmail } from '../../api/firebase';
 
 export default function SignIn({ navigation }) {
   const [secure, setSecure] = React.useState(true);
+  const [disabled, setDisabled] = React.useState(false);
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
 
   const createAccount = () => {
     navigation.navigate("CreateAccount");
   }
 
-  const goHome = () => {
-    navigation.navigate("Home");
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Home' }],
-    });
+  const goHome = async () => {
+    setDisabled(true);
+    const error = await signInWithEmail(email, password);
+    if (!error) {
+      navigation.navigate("Home");
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
+    } else {
+      setDisabled(false);
+    }
+
   }
 
   return (
@@ -39,6 +50,8 @@ export default function SignIn({ navigation }) {
             mode="outlined"
             placeholder="Enter your email"
             style={styles.input}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
             selectionColor="white"
             keyboardType="email-address"
             theme={{ colors: { text: "white", placeholder: 'rgba(255, 255, 255, 0.5);' } }}
@@ -47,6 +60,8 @@ export default function SignIn({ navigation }) {
             mode="outlined"
             placeholder="Create a password"
             style={styles.input}
+            value={password}
+            onChangeText={(text) => setPassword(text)}
             selectionColor="white"
             secureTextEntry={secure}
             theme={{ colors: { text: "white", placeholder: 'rgba(255, 255, 255, 0.5);' } }}
@@ -61,7 +76,7 @@ export default function SignIn({ navigation }) {
           </LinkButton>
         </View>
         <View style={styles.buttonContain}>
-          <ContainedButton onPress={() => goHome()}>
+          <ContainedButton disabled={disabled} onPress={() => goHome()}>
             Continue
           </ContainedButton>
         </View>

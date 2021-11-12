@@ -33,6 +33,13 @@ export default function CreateAccount({ navigation }) {
         <View>
           <TextInput
             mode="outlined"
+            placeholder="Enter your name"
+            style={styles.input}
+            selectionColor="white"
+            theme={{ colors: { text: "white", placeholder: 'rgba(255, 255, 255, 0.5);' } }}
+          />
+          <TextInput
+            mode="outlined"
             placeholder="Enter your email"
             style={styles.input}
             selectionColor="white"
@@ -51,6 +58,14 @@ export default function CreateAccount({ navigation }) {
                 onPress={() => setSecure(!secure)}
               />
             }
+          />
+          <TextInput
+            mode="outlined"
+            placeholder="Confirm password"
+            style={styles.input}
+            selectionColor="white"
+            secureTextEntry={secure}
+            theme={{ colors: { text: "white", placeholder: 'rgba(255, 255, 255, 0.5);' } }}
           />
           <List.Section style={styles.list}>
             <List.Item style={styles.listItem} titleStyle={styles.listItemTitle} title="Minimum 8 Characters" left={(props) => <List.Icon {...props} icon="check-circle" />} />
