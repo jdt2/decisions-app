@@ -7,7 +7,7 @@ import { discoverMovies } from '../api/api';
 
 // TODO: Merge with RoomSwipe for preloading
 
-export default function Instructions({ navigation }) {
+export default function Instructions({ navigation, showInstructions }) {
 
     const windowWidth = Dimensions.get('window').width
     const windowHeight = Dimensions.get('window').height
@@ -37,26 +37,14 @@ export default function Instructions({ navigation }) {
                 useNativeDriver: true,
             }),
         ]).start()
-
-        console.log(discoverMovies().then((response) => console.log(response)));
-
-        setTimeout(() => {
-            navigation.navigate("RoomSwipe");
-            navigation.reset({
-                index: 0,
-                routes: [{ name: 'RoomSwipe' }],
-            });
-        }, 5000)
     })
 
     return (
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }} alwaysBounceVertical={false} keyboardShouldPersistTaps="never">
-            <View style={styles.container}>
-                <Animated.Image source={require('../../assets/instructions1.png')} style={[styles.instruction, { opacity: firstOpacity, transform: [{ translateX: firstX }] }]} />
-                <Animated.Image source={require('../../assets/instructions2.png')} style={[styles.instruction, { opacity: secondOpacity, transform: [{ translateX: secondX }] }]} />
-                <Animated.Image source={require('../../assets/instructions3.png')} style={[styles.instruction, { opacity: thirdOpacity, transform: [{ translateY: thirdY }] }]} />
-            </View>
-        </ScrollView>
+        <View style={[styles.container, {display: showInstructions ? 'flex' : 'none'}]}>
+            <Animated.Image source={require('../../assets/instructions1.png')} style={[styles.instruction, { opacity: firstOpacity, transform: [{ translateX: firstX }] }]} />
+            <Animated.Image source={require('../../assets/instructions2.png')} style={[styles.instruction, { opacity: secondOpacity, transform: [{ translateX: secondX }] }]} />
+            <Animated.Image source={require('../../assets/instructions3.png')} style={[styles.instruction, { opacity: thirdOpacity, transform: [{ translateY: thirdY }] }]} />
+        </View>
     );
 }
 

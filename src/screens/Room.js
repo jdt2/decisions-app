@@ -22,10 +22,10 @@ export default function Room({ navigation, route }) {
     }, []);
 
     const goToInstructions = () => {
-        navigation.navigate("Instructions");
+        navigation.navigate("RoomSwipe");
         navigation.reset({
           index: 0,
-          routes: [{ name: 'Instructions' }],
+          routes: [{ name: 'RoomSwipe' }],
         });
     }
 

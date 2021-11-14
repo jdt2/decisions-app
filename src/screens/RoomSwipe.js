@@ -8,6 +8,7 @@ import Subheader from '../components/Subheader';
 import ImageBlurLoading from 'react-native-image-blur-loading';
 import FastImage from 'react-native-fast-image';
 import { getMovies } from '../api/firebase';
+import Instructions from './Instructions';
 
 const exampleMovies = [
     {
@@ -45,12 +46,23 @@ const exampleMovies = [
     }
 ];
 
+const formatRuntime = (runtime) => {
+    if (runtime >= 60) {
+        return `${Math.floor(runtime / 60)}h ${runtime % 60}m`;
+    } else {
+        return `${runtime} m`;
+    }
+
+}
+
 export default function RoomSwipe({ navigation, route }) {
 
-    const [movie, setMovie] = React.useState(exampleMovies[0]);
-    const [nextMovie, setNextMovie] = React.useState(exampleMovies[1]);
     const [movies, setMovies] = React.useState([]);
     const [index, setIndex] = React.useState(0);
+    const [showInstructions, setShowInstructions] = React.useState(true);
+    const [expandDesc, setExpandDesc] = React.useState(false);
+    const windowHeight = Dimensions.get('window').height
+    const windowWidth = Dimensions.get('window').width
     const translateX = new Animated.Value(0)
     const translateY = new Animated.Value(0)
 
@@ -58,6 +70,11 @@ export default function RoomSwipe({ navigation, route }) {
         const retrieveMovies = async () => {
             setMovies(await getMovies());
         }
+        setTimeout(() => {
+            navigation.setOptions({ headerShown: true });
+            setShowInstructions(false);
+
+        }, 5000)
         retrieveMovies();
     }, [])
 
@@ -66,8 +83,6 @@ export default function RoomSwipe({ navigation, route }) {
     )
 
     const y = new Animated.Value(0)
-    const windowHeight = Dimensions.get('window').height
-    const windowWidth = Dimensions.get('window').width
     const TopOrBottom = y.interpolate({ inputRange: [0, windowHeight / 2 - 1, windowHeight / 2], outputRange: [1, 1, -1], extrapolate: 'clamp' })
     const nextOpacity = translateX.interpolate({ inputRange: [-windowWidth, 0, windowWidth], outputRange: [1, 0, 1], extrapolate: 'clamp' })
     const nextScale = translateX.interpolate({ inputRange: [-windowWidth, 0, windowWidth], outputRange: [1, 0.5, 1], extrapolate: 'clamp' })
@@ -121,21 +136,24 @@ export default function RoomSwipe({ navigation, route }) {
                     source={movie.pic}
                     style={styles.poster}
                 /> */}
-                <Image source={{uri: movie.image_path}} style={styles.poster} />
+                <Image source={{ uri: movie.image_path }} style={styles.poster} />
                 <Card.Content style={styles.cardContent}>
-                    <Header fontSize={24} lineHeight={29}>{movie.title} ({movie.date.toDate().getFullYear()})</Header>
-                    <Text style={styles.description}>{movie.summary}</Text>
+                    <View style={{ flexDirection: 'row', paddingRight: 16, alignItems: 'center' }}>
+                        <Header style={{ flexGrow: 1, paddingRight: 16, }} fontSize={24} lineHeight={29}>{movie.title}</Header>
+                        <Text style={styles.subtitle}>{movie.rating} ★</Text>
+                    </View>
+                    <Text style={[styles.subtitle, { marginTop: 4, }]}>{movie.certification !== "" ? movie.certification + "  ·  " : ""}{formatRuntime(movie.runtime)}  ·  {movie.date.toDate().getFullYear()}</Text>
+                    <Text onPress={() => setExpandDesc(!expandDesc)} numberOfLines={!expandDesc ? 5 : null} style={styles.description}>{movie.summary}</Text>
                     <Header fontSize={24} lineHeight={29}>Genres</Header>
                     <View style={styles.genres}>
                         {movie.genres.map((genre, i) => (
                             <Chip key={i} style={styles.genre} textStyle={{ color: 'white' }}>{genre}</Chip>
                         ))}
                     </View>
-                    {/* <View style={styles.details}>
+                    <View style={styles.details}>
                         <Header style={{ marginBottom: 16, }} fontSize={20} lineHeight={24}>Director{movie.director.length > 1 && '(s)'}   <Text>{movie.director.map((e, i) => (i !== movie.director.length - 1 ? e + ", " : e))}</Text></Header>
-                        <Header style={{ marginBottom: 16, }} fontSize={20} lineHeight={24}>Writer{movie.writers.length > 1 && '(s)'}   <Text>{movie.writers.map((e, i) => (i !== movie.writers.length - 1 ? e + ", " : e))}</Text></Header>
                         <Header style={{ marginBottom: 16, }} fontSize={20} lineHeight={24}>Stars   <Text>{movie.stars.map((e, i) => (i !== movie.stars.length - 1 ? e + ", " : e))}</Text></Header>
-                    </View> */}
+                    </View>
                 </Card.Content>
             </Card>
         );
@@ -145,7 +163,7 @@ export default function RoomSwipe({ navigation, route }) {
         return movies.map((movie, i) => {
             if (i < index) {
                 return null;
-            } else if (i == index) {
+            } else if (i === index) {
                 return (
                     <PanGestureHandler key={i} onGestureEvent={handlePan} onHandlerStateChange={handleSwipe} >
                         <Animated.ScrollView style={[styles.card, { transform: [{ translateX }, { rotate }] }]} showsVerticalScrollIndicator={false}>
@@ -155,7 +173,7 @@ export default function RoomSwipe({ navigation, route }) {
                 );
             } else {
                 return (
-                    <Animated.ScrollView key={i} style={[styles.card, { opacity: nextOpacity, transform: [{ scale: nextScale }] }]}>
+                    <Animated.ScrollView key={i} style={[styles.card, { opacity: i === index + 1 ? nextOpacity : 0, transform: [{ scale: nextScale }] }]}>
                         {displayCard(movie)}
                     </Animated.ScrollView>
                 );
@@ -166,7 +184,10 @@ export default function RoomSwipe({ navigation, route }) {
     return (
         <ScrollView style={{ flex: 1, backgroundColor: '#fff' }} contentContainerStyle={{ flexGrow: 1 }} alwaysBounceVertical={false} keyboardShouldPersistTaps="never">
             <View style={styles.container}>
-                {renderMovies()}
+                <Instructions showInstructions={showInstructions} />
+                <View style={[styles.cardContainer, { display: showInstructions ? 'none' : 'flex' }]}>
+                    {renderMovies()}
+                </View>
             </View>
         </ScrollView>
     );
@@ -174,9 +195,11 @@ export default function RoomSwipe({ navigation, route }) {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         flexGrow: 1,
         backgroundColor: '#fff',
+    },
+    cardContainer: {
+        flexGrow: 1,
         marginHorizontal: 8,
         paddingBottom: 80,
     },
@@ -200,8 +223,12 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         resizeMode: 'cover',
     },
+    subtitle: {
+        fontSize: 14,
+        lineHeight: 17,
+    },
     description: {
-        marginTop: 16,
+        marginTop: 19,
         marginBottom: 32,
         fontSize: 16,
         lineHeight: 24,
@@ -210,12 +237,14 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         flexWrap: 'wrap',
+        marginTop: 16,
     },
     genre: {
         marginRight: 20,
+        marginBottom: 8,
         backgroundColor: '#263238',
     },
     details: {
-        marginTop: 32,
+        marginTop: 24,
     }
 });

@@ -21,3 +21,26 @@ export async function getGenres(genres) {
         console.error(e);
     }
 }
+
+export async function getMovieDetails(movie_id) {
+    try {
+        const data = (await axios.get(API_URI + `/movie/${movie_id}?api_key=${API_KEY}&append_to_response=credits,release_dates`)).data;
+        let certification = data.release_dates.results.filter(e => e.iso_3166_1 === "US");
+        //console.log(certification);
+        if (certification.length > 0) {
+            certification = certification[0].release_dates;
+            certification = certification[certification.length - 1].certification;
+        } else {
+            certification = "";
+        }
+        return {
+            genres: data.genres.map(e => e.name),
+            runtime: data.runtime,
+            director: data.credits.crew.filter(e => e.job === "Director").map(e => e.name),
+            stars: data.credits.cast.slice(0, 3).map(e => e.name),
+            certification,
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}

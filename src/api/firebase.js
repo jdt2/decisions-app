@@ -5,7 +5,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 //import {...} from "firebase/database";
 import { getFirestore, setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
-import { discoverMovies, getGenres } from './api';
+import { discoverMovies, getGenres, getMovieCertification, getMovieCredits, getMovieDetails } from './api';
 //import {...} from "firebase/functions";
 //import {...} from "firebase/storage";
 
@@ -107,7 +107,7 @@ const parseMovies = async (data) => {
         adult: e.adult,
         date: new Date(e.release_date),
         image_path: e.poster_path && `https://image.tmdb.org/t/p/original${e.poster_path}`,
-        genres: await getGenres(e.genre_ids),
+        ...await getMovieDetails(e.id),
     })));
     return results;
 }

@@ -57,7 +57,7 @@ export default function App() {
       setAuthReady(true);
     })
   }, [])
-  
+
   if (!fontsLoaded || !isAuthReady) {
     return (
       <View style={styles.container}>
@@ -78,7 +78,7 @@ export default function App() {
             <Stack.Screen name="JoinRoom" component={JoinRoom} />
             <Stack.Screen name="Room" component={Room} />
             <Stack.Screen name="Instructions" component={Instructions} options={{ headerShown: false }} />
-            <Stack.Screen name="RoomSwipe" component={RoomSwipe} />
+            <Stack.Screen name="RoomSwipe" component={RoomSwipe} options={{ headerShown: false }} />
             <Stack.Screen name="HostStreaming" component={HostStreaming} options={hostOptions} />
             <Stack.Screen name="HostGenres" component={HostGenres} options={hostOptions} />
             <Stack.Screen name="HostFilters" component={HostFilters} options={hostOptions} />
