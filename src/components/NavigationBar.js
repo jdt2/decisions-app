@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
     header: {
         elevation: 0,
         backgroundColor: 'white',
+        height: 80,
     },
     content: {
         color: '#263238',
