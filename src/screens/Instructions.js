@@ -11,12 +11,12 @@ export default function Instructions({ navigation, showInstructions }) {
 
     const windowWidth = Dimensions.get('window').width
     const windowHeight = Dimensions.get('window').height
-    const firstX = new Animated.Value(-windowWidth/2)
-    const secondX = new Animated.Value(windowWidth/2)
+    const firstX = new Animated.Value(-windowWidth / 2)
+    const secondX = new Animated.Value(windowWidth / 2)
     const thirdY = new Animated.Value(windowHeight)
-    
-    const firstOpacity = firstX.interpolate({ inputRange: [-windowWidth/2, 0], outputRange: [0, 1], extrapolate: 'clamp' })
-    const secondOpacity = secondX.interpolate({ inputRange: [0, windowWidth/2], outputRange: [1, 0], extrapolate: 'clamp' })
+
+    const firstOpacity = firstX.interpolate({ inputRange: [-windowWidth / 2, 0], outputRange: [0, 1], extrapolate: 'clamp' })
+    const secondOpacity = secondX.interpolate({ inputRange: [0, windowWidth / 2], outputRange: [1, 0], extrapolate: 'clamp' })
     const thirdOpacity = thirdY.interpolate({ inputRange: [0, windowHeight], outputRange: [1, 0], extrapolate: 'clamp' })
 
     React.useEffect(() => {
@@ -37,10 +37,17 @@ export default function Instructions({ navigation, showInstructions }) {
                 useNativeDriver: true,
             }),
         ]).start()
-    })
+        setTimeout(() => {
+            navigation.navigate("RoomSwipe");
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'RoomSwipe' }],
+            });
+        }, 5000);
+    }, []);
 
     return (
-        <View style={[styles.container, {display: showInstructions ? 'flex' : 'none'}]}>
+        <View style={[styles.container]}>
             <Animated.Image source={require('../../assets/instructions1.png')} style={[styles.instruction, { opacity: firstOpacity, transform: [{ translateX: firstX }] }]} />
             <Animated.Image source={require('../../assets/instructions2.png')} style={[styles.instruction, { opacity: secondOpacity, transform: [{ translateX: secondX }] }]} />
             <Animated.Image source={require('../../assets/instructions3.png')} style={[styles.instruction, { opacity: thirdOpacity, transform: [{ translateY: thirdY }] }]} />

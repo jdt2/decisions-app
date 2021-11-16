@@ -5,6 +5,8 @@ import { Button, TextInput, Text, Subheading, Headline, IconButton, List } from 
 import ContainedButton from '../components/ContainedButton';
 import { addMoviesToRoom } from '../api/firebase';
 
+// TODO: Add functionality to add players
+
 export default function Room({ navigation, route }) {
     const [canReady, setCanReady] = React.useState(true);
 
@@ -13,7 +15,7 @@ export default function Room({ navigation, route }) {
     React.useEffect(() => {
         const updateRoom = async () => {
             setCanReady(false);
-            await addMoviesToRoom();
+            await addMoviesToRoom(route.params);
             setCanReady(true);
         }
         if (isHost) {
@@ -22,10 +24,10 @@ export default function Room({ navigation, route }) {
     }, []);
 
     const goToInstructions = () => {
-        navigation.navigate("RoomSwipe");
+        navigation.navigate("Instructions");
         navigation.reset({
           index: 0,
-          routes: [{ name: 'RoomSwipe' }],
+          routes: [{ name: 'Instructions' }],
         });
     }
 

@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const streamingServices = {
-    8:{
+    8: {
         name: "Netflix",
         image: require('../../assets/streaming/netflix.png'),
         selected: false,
@@ -46,7 +46,7 @@ export const streamingServices = {
 }
 
 export const genreList = {
-    28:{
+    28: {
         name: "Action",
         image: require('../../assets/genres/action.png'),
         selected: false,
@@ -58,7 +58,7 @@ export const genreList = {
     },
     16: {
         name: "Animation",
-        image: require('../../assets/genres/prime.png'),
+        image: require('../../assets/genres/animation.png'),
         selected: false,
     },
     35: {

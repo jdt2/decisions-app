@@ -1,9 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Image } from 'react-native';
+import { StyleSheet, View, ScrollView, Image, Pressable, ImageBackground } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Button, TextInput, Text, Subheading, Headline, IconButton, List } from 'react-native-paper';
 import ContainedButton from '../components/ContainedButton';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { genreList } from '../constants/constants';
+import Header from '../components/Header';
 
 export default function HostGenres({ navigation, route }) {
 
@@ -16,14 +18,28 @@ export default function HostGenres({ navigation, route }) {
     const toggleGenre = (id) => {
         let genre = genres[id];
         genre.selected = !genre.selected;
-        setGenres({ ...genres, genre })
+        setGenres({ ...genres, [id]: genre })
+    }
+    
+    const toggleAll = (id) => {
+        let allSelected = true;
+        Object.keys(genres).forEach(key => {
+            if (!genres[key].selected) allSelected = false;
+        })
+        let newGenres = {};
+        Object.keys(genres).forEach(key => {
+            newGenres[key] = {...genres[key], selected: !allSelected}
+        });
+        setGenres(newGenres);
     }
 
     return (
         <ScrollView style={{ flex: 1, backgroundColor: '#fff' }} contentContainerStyle={{ flexGrow: 1 }} alwaysBounceVertical={false} keyboardShouldPersistTaps="never">
             <View style={styles.container}>
-                <View style={styles.allContainer}><Heading>All</Heading></View>
-                {Object.keys(genres).sort((a, b) => genres[a].name - genres[b].name).map((key, i) => (
+                <Pressable onPress={() => toggleAll()}>
+                    <View style={styles.allContainer}><Header style={{color: 'white'}} fontSize={34} lineHeight={41}>All</Header></View>
+                </Pressable>
+                {Object.keys(genres).sort((a, b) => genres[a].name > genres[b].name ? 1 : -1).map((key, i) => (
                     <Pressable key={key} onPress={() => toggleGenre(key)}>
                         <ImageBackground source={genres[key].image} style={styles.genre} imageStyle={styles.genreImage}>
                             {genres[key].selected && <View style={styles.genreContainer}><Icon style={styles.check} name="check-circle" size={30} color="white" /></View>}
@@ -75,6 +91,7 @@ const styles = StyleSheet.create({
     allContainer: {
         width: 156,
         height: 156,
+        borderRadius: 12,
         marginTop: 24,
         marginHorizontal: 8,
         backgroundColor: '#263238',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Image, Animated, Dimensions } from 'react-native';
+import { StyleSheet, View, ScrollView, Image, Animated, Dimensions, PanResponder } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Button, TextInput, Text, Subheading, Headline, IconButton, List, Card, Chip } from 'react-native-paper';
 import { PanGestureHandler } from 'react-native-gesture-handler';
@@ -48,48 +48,46 @@ const exampleMovies = [
 
 const formatRuntime = (runtime) => {
     if (runtime >= 60) {
-        return `${Math.floor(runtime / 60)}h ${runtime % 60}m`;
+        return `${Math.floor(runtime / 60)}h ${runtime % 60}m   ·  `;
+    } else if (runtime === 0) {
+        return "";
     } else {
-        return `${runtime} m`;
+        return `${runtime} m  ·  `;
     }
 
 }
+
+const windowHeight = Dimensions.get('window').height
+const windowWidth = Dimensions.get('window').width
 
 export default function RoomSwipe({ navigation, route }) {
 
     const [movies, setMovies] = React.useState([]);
     const [index, setIndex] = React.useState(0);
-    const [showInstructions, setShowInstructions] = React.useState(true);
     const [expandDesc, setExpandDesc] = React.useState(false);
-    const windowHeight = Dimensions.get('window').height
-    const windowWidth = Dimensions.get('window').width
+    const [_ignoreRegion, setIgnoreRegion] = React.useState({
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0
+    });
     const translateX = new Animated.Value(0)
     const translateY = new Animated.Value(0)
 
     React.useEffect(() => {
         const retrieveMovies = async () => {
-            setMovies(await getMovies());
+            const retrieved = await getMovies();
+            setMovies(retrieved);
         }
-        setTimeout(() => {
-            navigation.setOptions({ headerShown: true });
-            setShowInstructions(false);
-
-        }, 5000)
         retrieveMovies();
     }, [])
 
-    const handlePan = Animated.event(
-        [{ nativeEvent: { translationX: translateX, translationY: translateY } }], { useNativeDriver: true }
-    )
-
-    const y = new Animated.Value(0)
-    const TopOrBottom = y.interpolate({ inputRange: [0, windowHeight / 2 - 1, windowHeight / 2], outputRange: [1, 1, -1], extrapolate: 'clamp' })
     const nextOpacity = translateX.interpolate({ inputRange: [-windowWidth, 0, windowWidth], outputRange: [1, 0, 1], extrapolate: 'clamp' })
-    const nextScale = translateX.interpolate({ inputRange: [-windowWidth, 0, windowWidth], outputRange: [1, 0.5, 1], extrapolate: 'clamp' })
+    const nextScale = translateX.interpolate({ inputRange: [-windowWidth, 0, windowWidth], outputRange: [1, 0.8, 1], extrapolate: 'clamp' })
 
-    const rotate = Animated.multiply(translateX, TopOrBottom).interpolate({
-        inputRange: [-500, 500],
-        outputRange: [`-30deg`, `30deg`],
+    const rotate = translateX.interpolate({
+        inputRange: [-windowWidth, 0, windowWidth],
+        outputRange: [`-30deg`, `0deg`, `30deg`],
         extrapolate: 'clamp'
     })
 
@@ -106,56 +104,86 @@ export default function RoomSwipe({ navigation, route }) {
         })
     ])
 
-    const handleSwipe = ({ nativeEvent }) => {
-        const { state, translationX } = nativeEvent
-        if (state === 5) { //When the user takes their finger off the screen
-            if (translationX > 160 || translationX < -160) {
+    const _onLayout = ({
+        nativeEvent
+    }) => {
+        setIgnoreRegion(nativeEvent.layout);
+    };
+
+    const _isInsideRegion = (x, y, region) => {
+        return x >= region.x && x <= region.x + region.width && y >= region.y && y <= region.y + region.height;
+    }
+
+    const SwipePanResponder = PanResponder.create({
+        onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
+            if (_isInsideRegion(evt.nativeEvent.pageX, evt.nativeEvent.pageY, _ignoreRegion) &&
+                (gestureState.dx < 20 && gestureState.dx > -20)) {
+                reset.start();
+                return false;
+            } else {
+                return true;
+            }
+        },
+        onPanResponderMove: (evt, gestureState) => {
+            translateX.setValue(gestureState.dx);
+            translateY.setValue(gestureState.dy);
+        },
+        onPanResponderRelease: (evt, gestureState) => {
+            if (gestureState.dx > 120) {
                 Animated.timing(translateX, {
-                    toValue: translationX > 160 ? windowWidth : -windowWidth,
-                    duration: 50,
+                    toValue: windowWidth + 50,
+                    duration: 100,
                     useNativeDriver: true,
                 }).start(() => {
-                    /* setMovie(nextMovie)
-                    setNextMovie(movies[++index % 3]) */
                     setIndex(index + 1);
+                    setExpandDesc(false);
+                    translateX.setValue(0);
+                    translateY.setValue(0);
                 })
             }
-            else reset.start()
+            else if (gestureState.dx < -120) {
+                Animated.timing(translateX, {
+                    toValue: -windowWidth - 50,
+                    duration: 100,
+                    useNativeDriver: true,
+                }).start(() => {
+                    setIndex(index + 1);
+                    setExpandDesc(false);
+                    translateX.setValue(0);
+                    translateY.setValue(0);
+                })
+            }
+            else {
+                reset.start()
+            }
         }
-    }
+    })
 
     const displayCard = (movie) => {
         return (
-            <Card elevation={5} style={styles.innerCard}>
-                {/* <ImageBlurLoading
-                    thumbnailSource={movie.thumbnail}
-                    source={movie.pic}
-                    style={styles.poster}
-                /> */}
-                {/* <FastImage
-                    source={movie.pic}
-                    style={styles.poster}
-                /> */}
-                <Image source={{ uri: movie.image_path }} style={styles.poster} />
-                <Card.Content style={styles.cardContent}>
-                    <View style={{ flexDirection: 'row', paddingRight: 16, alignItems: 'center' }}>
-                        <Header style={{ flexGrow: 1, paddingRight: 16, }} fontSize={24} lineHeight={29}>{movie.title}</Header>
-                        <Text style={styles.subtitle}>{movie.rating} ★</Text>
-                    </View>
-                    <Text style={[styles.subtitle, { marginTop: 4, }]}>{movie.certification !== "" ? movie.certification + "  ·  " : ""}{formatRuntime(movie.runtime)}  ·  {movie.date.toDate().getFullYear()}</Text>
-                    <Text onPress={() => setExpandDesc(!expandDesc)} numberOfLines={!expandDesc ? 5 : null} style={styles.description}>{movie.summary}</Text>
-                    <Header fontSize={24} lineHeight={29}>Genres</Header>
-                    <View style={styles.genres}>
-                        {movie.genres.map((genre, i) => (
-                            <Chip key={i} style={styles.genre} textStyle={{ color: 'white' }}>{genre}</Chip>
-                        ))}
-                    </View>
-                    <View style={styles.details}>
-                        <Header style={{ marginBottom: 16, }} fontSize={20} lineHeight={24}>Director{movie.director.length > 1 && '(s)'}   <Text>{movie.director.map((e, i) => (i !== movie.director.length - 1 ? e + ", " : e))}</Text></Header>
-                        <Header style={{ marginBottom: 16, }} fontSize={20} lineHeight={24}>Stars   <Text>{movie.stars.map((e, i) => (i !== movie.stars.length - 1 ? e + ", " : e))}</Text></Header>
-                    </View>
-                </Card.Content>
-            </Card>
+            <ScrollView onLayout={_onLayout} showsVerticalScrollIndicator={false}>
+                <Card elevation={5} style={styles.innerCard}>
+                    <Card.Cover source={{ uri: movie.image_path }} style={styles.poster} />
+                    <Card.Content style={styles.cardContent}>
+                        <View style={{ flexDirection: 'row', paddingRight: 16, alignItems: 'center' }}>
+                            <Header style={{ flexGrow: 1, paddingRight: 16, }} fontSize={24} lineHeight={29}>{movie.title}</Header>
+                            <Text style={styles.subtitle}>{movie.rating} ★</Text>
+                        </View>
+                        <Text style={[styles.subtitle, { marginTop: 4, }]}>{movie.certification !== "" ? movie.certification + "  ·  " : ""}{formatRuntime(movie.runtime)}{movie.date.toDate().getFullYear()}</Text>
+                        <Text onPress={() => setExpandDesc(!expandDesc)} numberOfLines={!expandDesc ? 5 : null} style={styles.description}>{movie.summary}</Text>
+                        <Header fontSize={24} lineHeight={29}>Genres</Header>
+                        <View style={styles.genres}>
+                            {movie.genres.map((genre, i) => (
+                                <Chip key={i} style={styles.genre} textStyle={{ color: 'white' }}>{genre}</Chip>
+                            ))}
+                        </View>
+                        <View style={styles.details}>
+                            <Header style={{ marginBottom: 16, }} fontSize={20} lineHeight={24}>Director{movie.director.length > 1 && '(s)'}   <Text>{movie.director.map((e, i) => (i !== movie.director.length - 1 ? e + ", " : e))}</Text></Header>
+                            <Header style={{ marginBottom: 16, }} fontSize={20} lineHeight={24}>Stars   <Text>{movie.stars.map((e, i) => (i !== movie.stars.length - 1 ? e + ", " : e))}</Text></Header>
+                        </View>
+                    </Card.Content>
+                </Card>
+            </ScrollView>
         );
     }
 
@@ -165,17 +193,15 @@ export default function RoomSwipe({ navigation, route }) {
                 return null;
             } else if (i === index) {
                 return (
-                    <PanGestureHandler key={i} onGestureEvent={handlePan} onHandlerStateChange={handleSwipe} >
-                        <Animated.ScrollView style={[styles.card, { transform: [{ translateX }, { rotate }] }]} showsVerticalScrollIndicator={false}>
-                            {displayCard(movie)}
-                        </Animated.ScrollView>
-                    </PanGestureHandler>
+                    <Animated.View key={i} {...SwipePanResponder.panHandlers} style={[styles.card, { transform: [{ translateX }, { rotate }] }]}>
+                        {displayCard(movie)}
+                    </Animated.View>
                 );
             } else {
                 return (
-                    <Animated.ScrollView key={i} style={[styles.card, { opacity: i === index + 1 ? nextOpacity : 0, transform: [{ scale: nextScale }] }]}>
+                    <Animated.View key={i} style={[styles.card, { opacity: i === index + 1 ? nextOpacity : 0, transform: [{ scale: nextScale }] }]}>
                         {displayCard(movie)}
-                    </Animated.ScrollView>
+                    </Animated.View>
                 );
             }
         }).reverse();
@@ -184,10 +210,7 @@ export default function RoomSwipe({ navigation, route }) {
     return (
         <ScrollView style={{ flex: 1, backgroundColor: '#fff' }} contentContainerStyle={{ flexGrow: 1 }} alwaysBounceVertical={false} keyboardShouldPersistTaps="never">
             <View style={styles.container}>
-                <Instructions showInstructions={showInstructions} />
-                <View style={[styles.cardContainer, { display: showInstructions ? 'none' : 'flex' }]}>
-                    {renderMovies()}
-                </View>
+                {renderMovies()}
             </View>
         </ScrollView>
     );
@@ -198,21 +221,16 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         backgroundColor: '#fff',
     },
-    cardContainer: {
-        flexGrow: 1,
-        marginHorizontal: 8,
-        paddingBottom: 80,
-    },
     card: {
-        width: "100%",
-        height: "100%",
-        borderRadius: 8,
+        width: '100%',
+        height: '100%',
         position: 'absolute',
-        top: 40,
-        backgroundColor: 'white',
+        borderRadius: 8,
+        backgroundColor: '#fff',
     },
     innerCard: {
         height: "100%",
+        marginHorizontal: 8,
     },
     cardContent: {
         marginVertical: 24,

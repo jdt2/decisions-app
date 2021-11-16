@@ -4,9 +4,21 @@ import axios from 'axios';
 const API_KEY = '9a486678298b7343c236968cf85edbc1';
 const API_URI = `https://api.themoviedb.org/3`;
 
-export async function discoverMovies() {
+export async function discoverMovies({ host, filter, services, genres }) {
     try {
-        const response = await axios.get(API_URI + `/discover/movie?api_key=${API_KEY}`);
+        const service_ids = Object.keys(services).filter(e => services[e].selected);
+        const genre_ids = Object.keys(genres).filter(e => genres[e].selected);
+        const certifications = Array.from(filter.ageRestrict);
+        const dateRange = filter.dateRange;
+        const ratingRange = filter.ratingRange;
+        
+        let params = service_ids.length > 0 ? `&with_watch_providers=${service_ids.join('|')}` : ``;
+        params += genre_ids.length > 0 ? `&with_genres=${genre_ids.join('|')}` : ``;
+        params += certifications.length > 0 ? `&certification_country=US&certification=${certifications.join('|')}` : ``;
+        params += `&vote_average.gte=${ratingRange[0]}&vote_average.lte=${ratingRange[1]}`;
+        params += `&release_date.gte=${dateRange[0]}-01-01&release_date.lte=${dateRange[1]}-12-31`;
+        console.log(params);
+        const response = await axios.get(API_URI + `/discover/movie?api_key=${API_KEY}${params}`);
         return response.data;
     } catch (e) {
         console.error(e);

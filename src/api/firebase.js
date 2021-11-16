@@ -89,7 +89,7 @@ export const createRoom = async () => {
             finalDecision: "",
             state: "Creating",
             movies: [],
-            players: [],
+            players: [auth.currentUser.uid],
             hostID: auth.currentUser.uid,
         })
         await AsyncStorage.setItem("roomCode", roomCode);
@@ -113,12 +113,12 @@ const parseMovies = async (data) => {
 }
 
 // TODO: add preferences
-export const addMoviesToRoom = async () => {
+export const addMoviesToRoom = async (filters) => {
     if (!isLoggedIn()) return;
     const roomCode = await AsyncStorage.getItem("roomCode");
     if (!roomCode) return;
     try {
-        const movies = await parseMovies(await discoverMovies());
+        const movies = await parseMovies(await discoverMovies(filters));
         updateDoc(doc(firestore, "games", roomCode), {
             state: "Ready",
             movies,

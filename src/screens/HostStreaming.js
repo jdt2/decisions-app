@@ -29,7 +29,7 @@ export default function HostStreaming({ navigation }) {
     const toggleService = (id) => {
         let service = services[id];
         service.selected = !service.selected;
-        setServices({ ...services, service })
+        setServices({ ...services, [id]: service })
     }
 
     return (
